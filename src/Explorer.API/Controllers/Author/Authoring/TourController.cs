@@ -2,9 +2,11 @@
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
 using Explorer.Tours.Core.Domain.Tours;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Explorer.API.Controllers.Author.Authoring
 {
@@ -18,7 +20,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             _tourService = tourService;
         }
 
-
+        /*
         [HttpPost]
         public ActionResult<TourDTO> Create([FromBody] TourDTO tour)
         {
@@ -28,7 +30,40 @@ namespace Explorer.API.Controllers.Author.Authoring
             var result = _tourService.Create(tour);
 
             return CreateResponse(result);
+        }*/
+        [HttpPost]
+        public async Task<ActionResult<TourDTO>> Create([FromBody] TourDTO tour)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tours";
+                    
+
+                  
+                    var response = await client.PostAsJsonAsync(url, tour);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Response from server: " + responseContent);
+                        return CreateResponse(Result.Ok(response));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return CreateResponse(Result.Fail("An error occurred"));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return CreateResponse(Result.Fail("An error occurred").WithError(ex.Message));
+                }
+            }
         }
+
 
         [HttpGet("search/{lat:double}/{lon:double}/{ran:int}/{type:int}")]
         //[AllowAnonymous]
