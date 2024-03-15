@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
+using System.Net.Http.Json;
 
 namespace Explorer.API.Controllers.Author.Authoring
 {
@@ -84,12 +85,40 @@ namespace Explorer.API.Controllers.Author.Authoring
 
 
         [HttpGet("{userId:int}")]
-        public ActionResult<PagedResult<TourDTO>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
+        public async Task<ActionResult<PagedResult<TourDTO>>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
         {
-            var result = _tourService.GetByUserId(userId, page, pageSize);
-            return CreateResponse(result);
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/toursByGuideId/" + userId + "?page=" + page + "&pageSize=" + pageSize;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<List<TourDTO>>();
+                        var pagedResult = new PagedResult<TourDTO>(responseData, responseData.Count);
+
+                        return Ok(pagedResult);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
         }
-        
+
+
+
+
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
