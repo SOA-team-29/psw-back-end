@@ -28,21 +28,40 @@ namespace Explorer.API.Controllers.Author.Administration
             return CreateResponse(result);
         }
         
-        [HttpPost]/*
-        public (ActionResult<TourPointDto>, int) Create([FromBody] TourPointDto tourPoint)
-        {
-            var result = _tourPointService.Create(tourPoint);
-            Console.WriteLine("rezultat id:" + result.Value.Id);
-
-            return (CreateResponse(result), result.Value.Id);
-        }*/
         
-        public ActionResult<PagedResult<TourPointDto>> Create([FromBody] TourPointDto tourPoint)
+        
+       
+        [HttpPost]
+        public async Task<ActionResult<TourPointDto>> Create([FromBody] TourPointDto tourPoint)
         {
-            var result = _tourPointService.Create(tourPoint);
-            Console.WriteLine("rezultat id:" + result.Value.Id);
-            
-            return CreateResponse(result);
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tourPoint";
+
+
+
+                    var response = await client.PostAsJsonAsync(url, tourPoint);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Response from server: " + responseContent);
+                        return CreateResponse(Result.Ok(response));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return CreateResponse(Result.Fail("An error occurred"));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return CreateResponse(Result.Fail("An error occurred").WithError(ex.Message));
+                }
+            }
         }
 
         [Authorize(Policy = "authorPolicy")]
