@@ -148,22 +148,89 @@ namespace Explorer.API.Controllers.Author.Authoring
             return CreateResponse(result);
         }
 
+        /*
         [HttpPut("publish/{tourId:int}")]
         public ActionResult Publish(int tourId)
         {
             var result = _tourService.Publish(tourId);
             return CreateResponse(result);
+        }*/
+
+
+        [HttpPut("publish/{tourId:int}")]
+        
+        public async Task<ActionResult> Publish(int tourId)
+        {
+            try
+            {
+                
+
+                string golangUrl = "http://localhost:8081/tours/publish/" + tourId;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.PutAsync(golangUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                       
+                        return StatusCode((int)response.StatusCode, responseContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-       
+        /*
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpPut("archive/{id:int}")]
         public ActionResult ArchiveTour(int id)
         {
             var result = _tourService.ArchiveTour(id);
             return CreateResponse(result);
+        }*/
+
+        [Authorize(Policy = "touristAuthorPolicy")]
+        [HttpPut("archive/{id:int}")]
+
+        public async Task<ActionResult> Archive(int id)
+        {
+            try
+            {
+
+
+                string golangUrl = "http://localhost:8081/tours/archive/" + id;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.PutAsync(golangUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+
+                        return StatusCode((int)response.StatusCode, responseContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-       
+
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpDelete("deleteAggregate/{id:int}")]
         public ActionResult DeleteAggregate(int id)
