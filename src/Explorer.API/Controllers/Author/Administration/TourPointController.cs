@@ -80,14 +80,50 @@ namespace Explorer.API.Controllers.Author.Administration
             return CreateResponse(result);
         }
 
-        [Authorize(Policy = "touristAuthorPolicy")]
+
+        /*
+         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpGet("{tourId:int}")]
 
 		public ActionResult<List<TourPointDto>> GetTourPointsByTourId(int tourId)
 		{
 			var result = _tourPointService.GetTourPointsByTourId(tourId);
 			return CreateResponse(result);
-		}
+		}*/
+
+        
+        [Authorize(Policy = "touristAuthorPolicy")]
+        [HttpGet("{tourId:int}")]
+        public async Task<ActionResult<List<TourPointDto>>> GetTourPointsByTourId(int tourId)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tourPoint/allPointsInTour/" + tourId;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<List<TourPointDto>>();
+                        
+
+                        return Ok(responseData);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
+        }
 
         [HttpGet("getById/{id:int}")]
         public ActionResult<TourPointDto> GetTourPointById(int id)

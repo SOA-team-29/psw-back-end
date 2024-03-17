@@ -82,8 +82,13 @@ namespace Explorer.API.Controllers.Author.Authoring
         }
 
 
-
-
+        /*
+        [HttpGet("{userId:int}")]
+        public ActionResult<PagedResult<TourDTO>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
+        {
+            var result = _tourService.GetByUserId(userId, page, pageSize);
+            return CreateResponse(result);
+        }*/
         [HttpGet("{userId:int}")]
         public async Task<ActionResult<PagedResult<TourDTO>>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
         {
@@ -166,24 +171,93 @@ namespace Explorer.API.Controllers.Author.Authoring
             var result = _tourService.DeleteAggregate(id);
             return CreateResponse(result);
         }
-
+        /*
         [HttpGet("onetour/{id:int}")]
 
         public ActionResult<TourDTO> getTourByTourId(int id)
         {
             var result = _tourService.GetTourByTourId(id);
             return CreateResponse(result);
+        }*/
+        [HttpGet("onetour/{id:int}")]
+        public async Task<ActionResult<TourDTO>> getTourByTourId(int id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tours/" + id ;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<TourDTO>();
+                        
+
+                        return Ok(responseData);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
         }
 
 
 
-       //[Authorize(Policy = "touristPolicy")]
-
+        //[Authorize(Policy = "touristPolicy")]
+        /*
         [HttpGet("allTours")]
         public ActionResult<PagedResult<TourReviewDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize) {
             var result = _tourService.GetAll(page, pageSize);
             return CreateResponse(result);
+        }*/
+
+        [HttpGet("allTours")]
+        public async Task<ActionResult<PagedResult<TourDTO>>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tours/all" + "?page=" + page + "&pageSize=" + pageSize;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<List<TourDTO>>();
+                        var pagedResult = new PagedResult<TourDTO>(responseData, responseData.Count);
+
+                        return Ok(pagedResult);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
         }
+
+
+
+
+
+
 
         [Authorize(Policy = "authorPolicy")]
         [HttpGet("sales/{id:int}")]
