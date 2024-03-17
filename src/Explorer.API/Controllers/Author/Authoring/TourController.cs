@@ -281,21 +281,21 @@ namespace Explorer.API.Controllers.Author.Authoring
 
 
         //[Authorize(Policy = "touristPolicy")]
-        /*
+        
         [HttpGet("allTours")]
         public ActionResult<PagedResult<TourReviewDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize) {
             var result = _tourService.GetAll(page, pageSize);
             return CreateResponse(result);
-        }*/
+        }
 
-        [HttpGet("allTours")]
-        public async Task<ActionResult<PagedResult<TourDTO>>> GetAll([FromQuery] int page, [FromQuery] int pageSize)
+        [HttpGet("SeeAllTours")]
+        public async Task<ActionResult<PagedResult<TourDTO>>> GetAllTours([FromQuery] int page, [FromQuery] int pageSize)
         {
             using (HttpClient client = new HttpClient())
             {
                 try
                 {
-                    string url = "http://localhost:8081/tours/all" + "?page=" + page + "&pageSize=" + pageSize;
+                    string url = "http://localhost:8081/tours/see/all" + "?page=" + page + "&pageSize=" + pageSize;
 
                     var response = await client.GetAsync(url);
 
