@@ -288,7 +288,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             return CreateResponse(result);
         }
 
-        [HttpGet("SeeAllTours")]
+        [HttpGet("seeAllTours")]
         public async Task<ActionResult<PagedResult<TourDTO>>> GetAllTours([FromQuery] int page, [FromQuery] int pageSize)
         {
             using (HttpClient client = new HttpClient())
