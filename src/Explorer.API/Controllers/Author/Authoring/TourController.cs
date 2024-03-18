@@ -140,13 +140,44 @@ namespace Explorer.API.Controllers.Author.Authoring
             return CreateResponse(result);
         }
 
-
+        /*
         [HttpPut("caracteristics/{id:int}")]
         public ActionResult AddCaracteristics(int id, [FromBody] TourCharacteristicDTO tourCharacteristic)
         {
             var result = _tourService.SetTourCharacteristic(id, tourCharacteristic.Distance, tourCharacteristic.Duration, tourCharacteristic.TransportType);
             return CreateResponse(result);
+        }*/
+
+        [HttpPut("characteristics/{tourId:int}")]
+        public async Task<ActionResult> SetTourCharacteristics(int tourId, [FromBody] TourCharacteristicDTO tourCharacteristic)
+        {
+            try
+            {
+                string golangUrl = "http://localhost:8081/tours/characteristics/" + tourId;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    var content = new StringContent(JsonConvert.SerializeObject(tourCharacteristic), Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PutAsync(golangUrl, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        return StatusCode((int)response.StatusCode, responseContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
+
 
         /*
         [HttpPut("publish/{tourId:int}")]
