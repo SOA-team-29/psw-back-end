@@ -72,14 +72,14 @@ namespace Explorer.Blog.Core.UseCases
             var blogPostDto = _mapper.Map<BlogPostDto>(blogPost);
 
             // Map AuthorUsername based on the dictionary
-            blogPostDto.AuthorUsername = userIdUsernameDictionary.GetValueOrDefault(blogPost.AuthorId);
+            //blogPostDto.AuthorUsername = userIdUsernameDictionary.GetValueOrDefault(blogPost.AuthorId);
 
             // Map Username for each comment based on the dictionary
             if (blogPostDto.Comments != null)
             {
                 foreach (var commentDto in blogPostDto.Comments)
                 {
-                    commentDto.Username = userIdUsernameDictionary.GetValueOrDefault(commentDto.UserId);
+                    //commentDto.Username = userIdUsernameDictionary.GetValueOrDefault(commentDto.UserId);
                 }
             }
 
@@ -95,14 +95,14 @@ namespace Explorer.Blog.Core.UseCases
                 var blogPostDto = _mapper.Map<BlogPostDto>(blogPost); // Use AutoMapper for the general mapping
 
                 // Map AuthorUsername based on the dictionary
-                blogPostDto.AuthorUsername = userIdUsernameDictionary.GetValueOrDefault(blogPost.AuthorId);
+                //blogPostDto.AuthorUsername = userIdUsernameDictionary.GetValueOrDefault(blogPost.AuthorId);
 
                 // Map Username for each comment based on the dictionary
                 if (blogPostDto.Comments != null)
                 {
                     foreach (var commentDto in blogPostDto.Comments)
                     {
-                        commentDto.Username = userIdUsernameDictionary.GetValueOrDefault(commentDto.UserId);
+                        //commentDto.Username = userIdUsernameDictionary.GetValueOrDefault(commentDto.UserId);
                     }
                 }
 
