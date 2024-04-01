@@ -30,7 +30,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
             {
                 try
                 {
-                    string url = $"http://localhost:8081/blogs/all?page={page}&pageSize={pageSize}";
+                    string url = $"http://localhost:8082/blogs/all?page={page}&pageSize={pageSize}";
 
                     var response = await client.GetAsync(url);
 
@@ -78,7 +78,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
             {
                 try
                 {
-                    string url = $"http://localhost:8081/blogs/{blogPostId}/comments";
+                    string url = $"http://localhost:8082/blogs/{blogPostId}/comments";
 
                     var response = await client.PostAsJsonAsync(url, blogPostComment);
 
@@ -137,7 +137,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
             {
                 try
                 {
-                    string url = "http://localhost:8081/blogs";
+                    string url = "http://localhost:8082/blogs";
 
 
 
@@ -184,7 +184,7 @@ namespace Explorer.API.Controllers.Tourist.Blog
             {
                 try
                 {
-                    string url = $"http://localhost:8081/blogs/{blogPostId}/comments/{userId}/{creationTime}";
+                    string url = $"http://localhost:8082/blogs/{blogPostId}/comments/{userId}/{creationTime}";
 
                     var response = await client.DeleteAsync(url);
 
