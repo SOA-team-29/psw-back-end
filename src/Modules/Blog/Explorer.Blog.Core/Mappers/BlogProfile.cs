@@ -27,7 +27,7 @@ public class BlogProfile : Profile
         CreateMap<BlogPost, BlogPostDto>()
             .ForMember(dest => dest.AuthorId, opt => opt.MapFrom(src => src.AuthorId))
             .ForMember(dest => dest.TourId, opt => opt.MapFrom(src => src.TourId))
-            .ForMember(dest => dest.AuthorUsername, opt => opt.Ignore())
+            //.ForMember(dest => dest.AuthorUsername, opt => opt.Ignore())
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id))
             .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title))
             .ForMember(dest => dest.Description, opt => opt.MapFrom(src => src.Description))
