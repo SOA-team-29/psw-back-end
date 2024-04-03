@@ -23,7 +23,7 @@ public class CrudDatabaseRepository<TEntity, TDbContext> : ICrudRepository<TEnti
 
         task.Wait();
         return task.Result;
-    }
+    } 
 
     public TEntity Get(long id)
     {
