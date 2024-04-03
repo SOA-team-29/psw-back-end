@@ -12,7 +12,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
 {
     //[Authorize(Policy = "touristPolicy")]
     [Route("api/encounterExecution")]
-    public class EncounterExecutionController:BaseApiController
+    public class EncounterExecutionController : BaseApiController
     {
         private readonly IEncounterExecutionService _encounterExecutionService;
         private readonly ISocialEncounterService _socialEncounterService;
@@ -54,6 +54,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
                 return StatusCode(500, $"Error occured while sending request: {ex.Message}");
             }
         }
+
         [HttpPost]
         public async Task<ActionResult<EncounterExecutionDto>> Create([FromBody] EncounterExecutionDto encounterExecution)
         {
@@ -81,6 +82,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
                 return StatusCode(500, $"Error occured while sending request: {ex.Message}");
             }
         }
+
         [HttpPut("{id:int}")]
         public async Task<ActionResult<EncounterExecutionDto>> Update([FromBody] EncounterExecutionDto encounterExecution, int id)
         {
@@ -108,11 +110,11 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
                 return StatusCode(500, $"Error occured while sending request: {ex.Message}");
             }
         }
+
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            var result = _encounterExecutionService.Delete(id);
-            return CreateResponse(result); try
+            try
             {
                 string url = $"http://localhost:4000/encounterExecution/delete/{id}";
                 HttpResponseMessage response = await _httpClient.DeleteAsync(url);
@@ -205,7 +207,4 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
             }
         }
     }
-
-
-    }
-
+}
