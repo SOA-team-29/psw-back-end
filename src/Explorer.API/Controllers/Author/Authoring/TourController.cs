@@ -2,9 +2,12 @@
 using Explorer.Tours.API.Dtos;
 using Explorer.Tours.API.Public.Administration;
 using Explorer.Tours.Core.Domain.Tours;
+using FluentResults;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Text;
+using System.Net.Http.Json;
 
 namespace Explorer.API.Controllers.Author.Authoring
 {
@@ -18,7 +21,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             _tourService = tourService;
         }
 
-
+        /*
         [HttpPost]
         public ActionResult<TourDTO> Create([FromBody] TourDTO tour)
         {
@@ -28,7 +31,40 @@ namespace Explorer.API.Controllers.Author.Authoring
             var result = _tourService.Create(tour);
 
             return CreateResponse(result);
+        }*/
+        [HttpPost]
+        public async Task<ActionResult<TourDTO>> Create([FromBody] TourDTO tour)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tours";
+                    
+
+                  
+                    var response = await client.PostAsJsonAsync(url, tour);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Response from server: " + responseContent);
+                        return CreateResponse(Result.Ok(response));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return CreateResponse(Result.Fail("An error occurred"));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return CreateResponse(Result.Fail("An error occurred").WithError(ex.Message));
+                }
+            }
         }
+
 
         [HttpGet("search/{lat:double}/{lon:double}/{ran:int}/{type:int}")]
         //[AllowAnonymous]
@@ -46,15 +82,48 @@ namespace Explorer.API.Controllers.Author.Authoring
         }
 
 
-
-
+        /*
         [HttpGet("{userId:int}")]
         public ActionResult<PagedResult<TourDTO>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
         {
             var result = _tourService.GetByUserId(userId, page, pageSize);
             return CreateResponse(result);
+        }*/
+        [HttpGet("{userId:int}")]
+        public async Task<ActionResult<PagedResult<TourDTO>>> GetByUserId(int userId, [FromQuery] int page, [FromQuery] int pageSize)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/toursByGuideId/" + userId + "?page=" + page + "&pageSize=" + pageSize;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<List<TourDTO>>();
+                        var pagedResult = new PagedResult<TourDTO>(responseData, responseData.Count);
+
+                        return Ok(pagedResult);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
         }
-        
+
+
+
+
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpDelete("{id:int}")]
         public ActionResult Delete(int id)
@@ -71,30 +140,128 @@ namespace Explorer.API.Controllers.Author.Authoring
             return CreateResponse(result);
         }
 
-
+        /*
         [HttpPut("caracteristics/{id:int}")]
         public ActionResult AddCaracteristics(int id, [FromBody] TourCharacteristicDTO tourCharacteristic)
         {
             var result = _tourService.SetTourCharacteristic(id, tourCharacteristic.Distance, tourCharacteristic.Duration, tourCharacteristic.TransportType);
             return CreateResponse(result);
+        }*/
+
+        [HttpPut("characteristics/{tourId:int}")]
+        public async Task<ActionResult> SetTourCharacteristics(int tourId, [FromBody] TourCharacteristicDTO tourCharacteristic)
+        {
+            try
+            {
+                string golangUrl = "http://localhost:8081/tours/characteristics/" + tourId;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    var content = new StringContent(JsonConvert.SerializeObject(tourCharacteristic), Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PutAsync(golangUrl, content);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                        return StatusCode((int)response.StatusCode, responseContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
+
+        /*
         [HttpPut("publish/{tourId:int}")]
         public ActionResult Publish(int tourId)
         {
             var result = _tourService.Publish(tourId);
             return CreateResponse(result);
+        }*/
+
+
+        [HttpPut("publish/{tourId:int}")]
+        
+        public async Task<ActionResult> Publish(int tourId)
+        {
+            try
+            {
+                
+
+                string golangUrl = "http://localhost:8081/tours/publish/" + tourId;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.PutAsync(golangUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+                       
+                        return StatusCode((int)response.StatusCode, responseContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
-       
+        /*
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpPut("archive/{id:int}")]
         public ActionResult ArchiveTour(int id)
         {
             var result = _tourService.ArchiveTour(id);
             return CreateResponse(result);
+        }*/
+
+        [Authorize(Policy = "touristAuthorPolicy")]
+        [HttpPut("archive/{id:int}")]
+
+        public async Task<ActionResult> Archive(int id)
+        {
+            try
+            {
+
+
+                string golangUrl = "http://localhost:8081/tours/archive/" + id;
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = await client.PutAsync(golangUrl, null);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        return Ok();
+                    }
+                    else
+                    {
+                        string responseContent = await response.Content.ReadAsStringAsync();
+
+                        return StatusCode((int)response.StatusCode, responseContent);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
-       
+
         [Authorize(Policy = "touristAuthorPolicy")]
         [HttpDelete("deleteAggregate/{id:int}")]
         public ActionResult DeleteAggregate(int id)
@@ -102,24 +269,93 @@ namespace Explorer.API.Controllers.Author.Authoring
             var result = _tourService.DeleteAggregate(id);
             return CreateResponse(result);
         }
-
+        /*
         [HttpGet("onetour/{id:int}")]
 
         public ActionResult<TourDTO> getTourByTourId(int id)
         {
             var result = _tourService.GetTourByTourId(id);
             return CreateResponse(result);
+        }*/
+        [HttpGet("onetour/{id:int}")]
+        public async Task<ActionResult<TourDTO>> getTourByTourId(int id)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tours/" + id ;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<TourDTO>();
+                        
+
+                        return Ok(responseData);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
         }
 
 
 
-       //[Authorize(Policy = "touristPolicy")]
-
+        //[Authorize(Policy = "touristPolicy")]
+        
         [HttpGet("allTours")]
         public ActionResult<PagedResult<TourReviewDto>> GetAll([FromQuery] int page, [FromQuery] int pageSize) {
             var result = _tourService.GetAll(page, pageSize);
             return CreateResponse(result);
         }
+
+        [HttpGet("seeAllTours")]
+        public async Task<ActionResult<PagedResult<TourDTO>>> GetAllTours([FromQuery] int page, [FromQuery] int pageSize)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    string url = "http://localhost:8081/tours/see/all" + "?page=" + page + "&pageSize=" + pageSize;
+
+                    var response = await client.GetAsync(url);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseData = await response.Content.ReadFromJsonAsync<List<TourDTO>>();
+                        var pagedResult = new PagedResult<TourDTO>(responseData, responseData.Count);
+
+                        return Ok(pagedResult);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error: " + response.StatusCode);
+                        return BadRequest("An error occurred");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Exception: " + ex.Message);
+                    return BadRequest("An error occurred: " + ex.Message);
+                }
+            }
+        }
+
+
+
+
+
+
 
         [Authorize(Policy = "authorPolicy")]
         [HttpGet("sales/{id:int}")]
