@@ -27,7 +27,7 @@ public class EncounterController : BaseApiController
     private readonly IHiddenLocationEncounterService _hiddenLocationEncounterService;
     private readonly ISocialEncounterService _socialEncounterService;
 
-    //koirstimo ga za komunikaciju sa mikroservisima putem http zahteva
+   
     private readonly HttpClient _httpClient = new HttpClient();
 
     public EncounterController(IEncounterService encounterService, ISocialEncounterService socialEncounterService, IHiddenLocationEncounterService hiddenLocationEncounterService)
@@ -40,22 +40,13 @@ public class EncounterController : BaseApiController
     [HttpGet]
     public async Task<ActionResult<PagedResult<EncounterDto>>> GetAllEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
-        //async Task< > - potrpis metode da ce biti asinhrono izvrsavanje
-
-        //poziv mikroservisa za dobavljanje svih susreta
-        //saljemo get zahtev ka url koji je prosledjen kao agrument
+        
         var response = await _httpClient.GetAsync($"http://localhost:4000/encounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
-            //ceka na asinhrono citanje sadrzaja http odgovora (kao string)
             var responseContent = await response.Content.ReadAsStringAsync();
-
-            //DESERIJALIZUJE odgovor u List<EncounterDto>
-            //mi dobijemo JSON string - sadrzaj http odgovora (kao odgovor od mikroservisa), a hocemo da ga deserijalizujemo u .Net objekte
             List<EncounterDto> encounters = JsonConvert.DeserializeObject<List<EncounterDto>>(responseContent);
-
-            //kreiranje pagedResult objekta
             PagedResult<EncounterDto> pagedResult = new PagedResult<EncounterDto>(encounters, encounters.Count);
 
             return Ok(pagedResult);
@@ -111,22 +102,16 @@ public class EncounterController : BaseApiController
     [HttpPost]
     public async Task<ActionResult<EncounterDto>> Create([FromBody] EncounterDto encounter)
     {
-        //serijalizujemo objekat u json, kako bi smo ga mogli poslati mikroservisu putem http zahteva
         string json = JsonConvert.SerializeObject(encounter);
-
-        //koristi se za sadrzaj razlicitih zahteva
-        //mime tip - tip sadrzaja http zahteva (poslednje) - oznacava da je json format 
-        //omogucava slanje podataka u json formatu na server
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
         try
         {
-            //HttpResponseMessage - odgovor koji ce biti vracen nakon slanja http zahteva (statusni kod, sadrzaj, zaglavlje...)
             HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/create", content);
 
             if (response.IsSuccessStatusCode)
             {
-                //citamo sadrzaj odgovora
+ 
                 string responseContent = await response.Content.ReadAsStringAsync();
 
                 EncounterDto createdEncounter = JsonConvert.DeserializeObject<EncounterDto>(responseContent);
@@ -158,10 +143,6 @@ public class EncounterController : BaseApiController
             Latitude = wholeEncounter.Latitude,
             ShouldBeApproved = wholeEncounter.ShouldBeApproved
         };
-
-        //PRVO KREIRALI OBICAN ENCOUNTER (BASE ENCOUNTER)
-        //PostAsync: zahteva kreiranje content objekta, moze sadrzati bilo sta ne samo json objekte vec taj content
-        //PostAsJsonAsync: omogucava slanje objekta kao jsona, objekat ce biti automatski serijalizovan kao json pre slanja
         var baseEncounterResponse = await _httpClient.PostAsJsonAsync("http://localhost:4000/encounters/create", encounterDto);
 
         if (!baseEncounterResponse.IsSuccessStatusCode)
@@ -169,11 +150,8 @@ public class EncounterController : BaseApiController
             return StatusCode((int)HttpStatusCode.BadRequest, "Error occurred while creating encounter.");
         }
 
-        //deserijalizacija odgovora u EncounterDto
-        //cita sadrzaj http odgovora i deserijalizuje ga u odgovarajuci objekat iz .Net
         var createdEncounter = await baseEncounterResponse.Content.ReadFromJsonAsync<EncounterDto>();
 
-        //NA OSNOVU OBICNOG KREIRAJU HIDDEN LOCATION ENCOUNTER
         var hiddenLocationEncounterDto = new HiddenLocationEncounterDto
         {
             EncounterId = createdEncounter.Id,
@@ -236,7 +214,7 @@ public class EncounterController : BaseApiController
             ShouldBeApproved = socialEncounter.ShouldBeApproved
         };
 
-        //kreiranje encountera
+
         var baseEncounterResponse = await CreateBaseEncounterAsync(encounterDto);
 
         var baseEncounter = (OkObjectResult)baseEncounterResponse.Result;
@@ -250,15 +228,8 @@ public class EncounterController : BaseApiController
             TouristIDs = socialEncounter.TouristIDs
         };
 
-        // Pozivamo mikroservis za kreiranje socijalnog sastanka (SocialEncounter)
+      
         var result = await CreateSocialEncounterAsync(socialEncounterDto);
-
-        /*
-        if (result.Value == null)
-        {
-            return StatusCode((int)HttpStatusCode.BadRequest, "Error occurred while creating social encounter."); // Vraćamo BadRequest ako je rezultat null
-        }
-        */
 
         var wholeSocialEncounterDto = new WholeSocialEncounterDto
         {
@@ -270,7 +241,6 @@ public class EncounterController : BaseApiController
             Type = socialEncounter.Type,
             Latitude = socialEncounter.Latitude,
             Longitude = socialEncounter.Longitude,
-            //Id = result.Value.Id,
             TouristsRequiredForCompletion = socialEncounter.TouristsRequiredForCompletion,
             DistanceTreshold = socialEncounter.DistanceTreshold,
             TouristIDs = socialEncounter.TouristIDs,
@@ -280,7 +250,6 @@ public class EncounterController : BaseApiController
         return StatusCode((int)HttpStatusCode.Created, wholeSocialEncounterDto);
     }
 
-    //SOCIAL ENCOUNTER
     private async Task<ActionResult<SocialEncounterDto>> CreateSocialEncounterAsync(SocialEncounterDto socialEncounterDto)
     {
         string json = JsonConvert.SerializeObject(socialEncounterDto);
@@ -458,12 +427,8 @@ public class EncounterController : BaseApiController
         {
             var socialEncounterIdResponse = await GetSocialEncounterIdAsync(baseEncounterId);
 
-            //ovo sam radila jer bi mi bio potreban dodatni dto 
-            //citamo odgovor kao json string
             string jsonResponse1 = await socialEncounterIdResponse.Content.ReadAsStringAsync();
-            //json string konvertujemo u json objekat
             JObject jsonObject1 = JObject.Parse(jsonResponse1);
-            //odavde (iz json objekta) izvlacimo vrednost polja socialEncounterId 
             int socialEncounterId = (int)jsonObject1["socialEncounterId"];
 
             var hiddenLocationEncounterIdResponse = await GetHiddenLocationEncounterIdAsync(baseEncounterId);
