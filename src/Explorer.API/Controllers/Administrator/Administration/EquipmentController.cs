@@ -36,7 +36,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
             {
                 try
                 {
-                    string url = "http://localhost:8081/equipment" + "?page=" + page + "&pageSize=" + pageSize;
+                    string url = "http://host.docker.internal:8081/equipment" + "?page=" + page + "&pageSize=" + pageSize;
 
                     var response = await client.GetAsync(url);
 
@@ -74,7 +74,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         {
             try
             {
-                string url = "http://localhost:8081/equipment/tourist/getEquipment/?";
+                string url = "http://host.docker.internal:8081/equipment/tourist/getEquipment/?";
                 if (ids != null && ids.Count > 0)
                 {
                     url += "ids=" + string.Join(",", ids);
@@ -117,7 +117,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         {
             try
             {
-                string url = "http://localhost:8081/equipment/getOtherEquipment?";
+                string url = "http://host.docker.internal:8081/equipment/getOtherEquipment?";
                 if (ids != null && ids.Count > 0)
                 {
                     url += "ids=" + string.Join(",", ids);

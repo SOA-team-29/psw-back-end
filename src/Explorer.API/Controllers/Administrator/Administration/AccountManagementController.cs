@@ -33,7 +33,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         public async Task<ActionResult<List<AccountDto>>> GetAllAccounts()
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8083/");
+            httpClient.BaseAddress = new Uri("http://host.docker.internal:8083/");
 
             try
             {
@@ -65,7 +65,7 @@ namespace Explorer.API.Controllers.Administrator.Administration
         public async Task<ActionResult<AccountDto>> BlockOrUnblock([FromBody] AccountDto account)
         {
             using var httpClient = new HttpClient();
-            httpClient.BaseAddress = new Uri("http://localhost:8083/");
+            httpClient.BaseAddress = new Uri("http://host.docker.internal:8083/");
 
             try
             {

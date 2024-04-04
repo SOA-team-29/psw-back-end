@@ -38,7 +38,7 @@ namespace Explorer.API.Controllers.Tourist
             {
                 try
                 {
-                    string goServiceUrl = "http://localhost:8081/getTouristEquipment/" + touristId;
+                    string goServiceUrl = "http://host.docker.internal:8081/getTouristEquipment/" + touristId;
                     HttpResponseMessage response = await client.GetAsync(goServiceUrl);
 
                     if (response.IsSuccessStatusCode)
@@ -89,7 +89,7 @@ namespace Explorer.API.Controllers.Tourist
             {
                 try
                 {
-                    var response = await client.PostAsJsonAsync($"http://localhost:8081/touristEquipment/createTouristEquipment/{id}", "");
+                    var response = await client.PostAsJsonAsync($"http://host.docker.internal:8081/touristEquipment/createTouristEquipment/{id}", "");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -117,7 +117,7 @@ namespace Explorer.API.Controllers.Tourist
             {
                 try
                 {
-                    var response = await client.PutAsJsonAsync($"http://localhost:8081/touristEquipment/addToMyEquipment/{touristId}/{equipmentId}", "");
+                    var response = await client.PutAsJsonAsync($"http://host.docker.internal:8081/touristEquipment/addToMyEquipment/{touristId}/{equipmentId}", "");
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -148,7 +148,7 @@ namespace Explorer.API.Controllers.Tourist
             {
                 try
                 {
-                    var response = await client.PutAsJsonAsync($"http://localhost:8081/touristEquipment/deleteFromMyEquipment/{touristId}/{equipmentId}", "");
+                    var response = await client.PutAsJsonAsync($"http://host.docker.internal:8081/touristEquipment/deleteFromMyEquipment/{touristId}/{equipmentId}", "");
 
                     if (response.IsSuccessStatusCode)
                     {

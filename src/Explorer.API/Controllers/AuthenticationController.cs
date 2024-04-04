@@ -29,7 +29,7 @@ public class AuthenticationController : BaseApiController
     public async Task<ActionResult<AuthenticationTokensDto>> RegisterTourist([FromBody] AccountRegistrationDto account)
     {
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("http://localhost:8083/");
+        httpClient.BaseAddress = new Uri("http://host.docker.internal:8083/");
         Console.WriteLine("pre svega:");
         try
         {

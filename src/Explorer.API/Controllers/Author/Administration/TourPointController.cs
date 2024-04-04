@@ -38,7 +38,7 @@ namespace Explorer.API.Controllers.Author.Administration
             {
                 try
                 {
-                    string url = "http://localhost:8081/tourPoint";
+                    string url = "http://host.docker.internal:8081/tourPoint";
 
 
 
@@ -100,7 +100,7 @@ namespace Explorer.API.Controllers.Author.Administration
             {
                 try
                 {
-                    string url = "http://localhost:8081/tourPoint/allPointsInTour/" + tourId;
+                    string url = "http://host.docker.internal:8081/tourPoint/allPointsInTour/" + tourId;
 
                     var response = await client.GetAsync(url);
 

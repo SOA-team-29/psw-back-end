@@ -39,7 +39,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             {
                 try
                 {
-                    string url = "http://localhost:8081/tours";
+                    string url = "http://host.docker.internal:8081/tours";
                     
 
                   
@@ -96,7 +96,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             {
                 try
                 {
-                    string url = "http://localhost:8081/toursByGuideId/" + userId + "?page=" + page + "&pageSize=" + pageSize;
+                    string url = "http://host.docker.internal:8081/toursByGuideId/" + userId + "?page=" + page + "&pageSize=" + pageSize;
 
                     var response = await client.GetAsync(url);
 
@@ -153,7 +153,7 @@ namespace Explorer.API.Controllers.Author.Authoring
         {
             try
             {
-                string golangUrl = "http://localhost:8081/tours/characteristics/" + tourId;
+                string golangUrl = "http://host.docker.internal:8081/tours/characteristics/" + tourId;
 
                 using (HttpClient client = new HttpClient())
                 {
@@ -196,7 +196,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             {
                 
 
-                string golangUrl = "http://localhost:8081/tours/publish/" + tourId;
+                string golangUrl = "http://host.docker.internal:8081/tours/publish/" + tourId;
 
                 using (HttpClient client = new HttpClient())
                 {
@@ -238,7 +238,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             {
 
 
-                string golangUrl = "http://localhost:8081/tours/archive/" + id;
+                string golangUrl = "http://host.docker.internal:8081/tours/archive/" + id;
 
                 using (HttpClient client = new HttpClient())
                 {
@@ -284,7 +284,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             {
                 try
                 {
-                    string url = "http://localhost:8081/tours/" + id ;
+                    string url = "http://host.docker.internal:8081/tours/" + id ;
 
                     var response = await client.GetAsync(url);
 
@@ -326,7 +326,7 @@ namespace Explorer.API.Controllers.Author.Authoring
             {
                 try
                 {
-                    string url = "http://localhost:8081/tours/see/all" + "?page=" + page + "&pageSize=" + pageSize;
+                    string url = "http://host.docker.internal:8081/tours/see/all" + "?page=" + page + "&pageSize=" + pageSize;
 
                     var response = await client.GetAsync(url);
 

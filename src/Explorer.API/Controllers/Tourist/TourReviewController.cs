@@ -34,7 +34,7 @@ namespace Explorer.API.Controllers.Tourist
             {
                 try
                 {
-                    string url = "http://localhost:8081/tourReviews/create";
+                    string url = "http://host.docker.internal:8081/tourReviews/create";
 
 
 
@@ -75,7 +75,7 @@ namespace Explorer.API.Controllers.Tourist
             {
                 try
                 {
-                    string url = "http://localhost:8081/tourReviews/see" + "?page=" + page + "&pageSize=" + pageSize;
+                    string url = "http://host.docker.internal:8081/tourReviews/see" + "?page=" + page + "&pageSize=" + pageSize;
 
                     var response = await client.GetAsync(url);
 

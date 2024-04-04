@@ -33,7 +33,7 @@ public class ProfileController : BaseApiController
     public async Task<ActionResult<UserProfileDto>> Get([FromRoute] int userId)
     {
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("http://localhost:8083/");
+        httpClient.BaseAddress = new Uri("http://host.docker.internal:8083/");
 
         try
         {
@@ -66,7 +66,7 @@ public class ProfileController : BaseApiController
     public async Task<ActionResult<UserProfileDto>> Update([FromBody] UserProfileDto profile)
     {
         using var httpClient = new HttpClient();
-        httpClient.BaseAddress = new Uri("http://localhost:8083/");
+        httpClient.BaseAddress = new Uri("http://host.docker.internal:8083/");
 
         try
         {

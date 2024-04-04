@@ -32,7 +32,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
         {
             try
             {
-                string url = $"http://localhost:4000/encounterExecution";
+                string url = $"http://host.docker.internal:4000/encounterExecution";
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
@@ -62,7 +62,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             try
             {
-                HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounterExecution/create", content);
+                HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounterExecution/create", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -90,7 +90,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
             HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
             try
             {
-                HttpResponseMessage response = await _httpClient.PutAsync($"http://localhost:4000/encounterExecution/update/{id}", content);
+                HttpResponseMessage response = await _httpClient.PutAsync($"http://host.docker.internal:4000/encounterExecution/update/{id}", content);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -116,7 +116,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
         {
             try
             {
-                string url = $"http://localhost:4000/encounterExecution/delete/{id}";
+                string url = $"http://host.docker.internal:4000/encounterExecution/delete/{id}";
                 HttpResponseMessage response = await _httpClient.DeleteAsync(url);
 
                 if (response.IsSuccessStatusCode)
@@ -152,7 +152,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
         {
             try
             {
-                string url = $"http://localhost:4000/encounterExecution/getActive/{userId}";
+                string url = $"http://host.docker.internal:4000/encounterExecution/getActive/{userId}";
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
@@ -186,7 +186,7 @@ namespace Explorer.API.Controllers.Tourist.EncounterExecution
         {
             try
             {
-                string url = $"http://localhost:4000/encounterExecution/completeExecution/{userId}";
+                string url = $"http://host.docker.internal:4000/encounterExecution/completeExecution/{userId}";
                 HttpResponseMessage response = await _httpClient.GetAsync(url);
 
                 if (response.IsSuccessStatusCode)
