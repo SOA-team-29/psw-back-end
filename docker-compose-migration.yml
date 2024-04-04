@@ -1,0 +1,21 @@
+version: '3.9'
+
+services:
+  explorer-migration:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: execute-migration
+    networks:
+      - database
+    environment:
+      DATABASE_HOST: database
+      DATABASE_USERNAME: postgres
+      DATABASE_PASSWORD: super
+      DATABASE_SCHEMA: explorer-v1
+
+networks:
+  database:
+    name: database
+    driver: bridge
+    external: true

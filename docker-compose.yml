@@ -1,0 +1,56 @@
+version: '3.9'
+
+services:
+  explorer:
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: final
+    restart: on-failure
+    networks:
+      - database
+    ports:
+      - "44333:80"
+    environment:
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_PASSWORD: super
+      DATABASE_USER: postgres
+      DATABASE_SCHEMA: explorer-v1
+    depends_on:
+      - database
+
+ 
+
+ 
+  database:
+    image: postgres:latest
+    restart: always
+    networks:
+      - database
+    environment:
+      POSTGRES_PASSWORD: super
+      POSTGRES_USER: postgres
+      POSTGRES_DB: explorer-v1
+    volumes:
+      - type: volume
+        source: explorer-data
+        target: /var/lib/postgresql/data
+      - type: bind
+        source: explorer-init-data.sql
+        target: /tmp/explorer-init.sql
+      
+    ports:
+      - "5432:5432"
+
+  
+
+volumes:
+  explorer-data:
+    name: explorer-data
+  
+
+networks:
+  database:
+    name: database
+    driver: bridge
