@@ -37,8 +37,9 @@ internal class ProblemRepository : IProblemRepository
 
     public PagedResult<Problem> GetProblemsOfUser(int userId, int page, int pageSize)
     {
-        var problems = _problems.Include(p => p.Messages).Where(p =>p.IdGuide == userId || p.IdTourist == userId).GetPagedById(page, pageSize);
-        return problems.Result;
+         var problems = _problems.Include(p => p.Messages).Where(p =>p.IdGuide == userId || p.IdTourist == userId).GetPagedById(page, pageSize);
+         return problems.Result;
+        
     }
 }
 

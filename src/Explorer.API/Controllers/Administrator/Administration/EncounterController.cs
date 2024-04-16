@@ -38,16 +38,16 @@ public class EncounterController : BaseApiController
     }
 
     [HttpGet]
-    public async Task<ActionResult<PagedResult<EncounterDto>>> GetAllEncounters([FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<ActionResult<PagedResult<EncounterDtoDB>>> GetAllEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
         
-        var response = await _httpClient.GetAsync($"http://host.docker.internal:4000/encounters?page={page}&pageSize={pageSize}");
+        var response = await _httpClient.GetAsync($"http://localhost:4000/encounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
-            List<EncounterDto> encounters = JsonConvert.DeserializeObject<List<EncounterDto>>(responseContent);
-            PagedResult<EncounterDto> pagedResult = new PagedResult<EncounterDto>(encounters, encounters.Count);
+            List<EncounterDtoDB> encounters = JsonConvert.DeserializeObject<List<EncounterDtoDB>>(responseContent);
+            PagedResult<EncounterDtoDB> pagedResult = new PagedResult<EncounterDtoDB>(encounters, encounters.Count);
 
             return Ok(pagedResult);
         }
@@ -58,17 +58,17 @@ public class EncounterController : BaseApiController
     }
 
     [HttpGet("social")]
-    public async Task<ActionResult<PagedResult<SocialEncounterDto>>> GetAllSocialEncounters([FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<ActionResult<PagedResult<SocialEncounterDtoDB>>> GetAllSocialEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
-        var response = await _httpClient.GetAsync($"http://host.docker.internal:4000/socialEncounters?page={page}&pageSize={pageSize}");
+        var response = await _httpClient.GetAsync($"http://localhost:4000/socialEncounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            List<SocialEncounterDto> encounters = JsonConvert.DeserializeObject<List<SocialEncounterDto>>(responseContent);
+            List<SocialEncounterDtoDB> encounters = JsonConvert.DeserializeObject<List<SocialEncounterDtoDB>>(responseContent);
 
-            PagedResult<SocialEncounterDto> pagedResult = new PagedResult<SocialEncounterDto>(encounters, encounters.Count);
+            PagedResult<SocialEncounterDtoDB> pagedResult = new PagedResult<SocialEncounterDtoDB>(encounters, encounters.Count);
 
             return Ok(pagedResult);
         }
@@ -79,17 +79,17 @@ public class EncounterController : BaseApiController
     }
 
     [HttpGet("hiddenLocation")]
-    public async Task<ActionResult<PagedResult<HiddenLocationEncounterDto>>> GetAllHiddenLocationEncounters([FromQuery] int page, [FromQuery] int pageSize)
+    public async Task<ActionResult<PagedResult<HiddenLocationEncounterDtoDB>>> GetAllHiddenLocationEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
-        var response = await _httpClient.GetAsync($"http://host.docker.internal:4000/hiddenLocationEncounters?page={page}&pageSize={pageSize}");
+        var response = await _httpClient.GetAsync($"http://localhost:4000/hiddenLocationEncounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
 
-            List<HiddenLocationEncounterDto> encounters = JsonConvert.DeserializeObject<List<HiddenLocationEncounterDto>>(responseContent);
+            List<HiddenLocationEncounterDtoDB> encounters = JsonConvert.DeserializeObject<List<HiddenLocationEncounterDtoDB>>(responseContent);
 
-            PagedResult<HiddenLocationEncounterDto> pagedResult = new PagedResult<HiddenLocationEncounterDto>(encounters, encounters.Count);
+            PagedResult<HiddenLocationEncounterDtoDB> pagedResult = new PagedResult<HiddenLocationEncounterDtoDB>(encounters, encounters.Count);
 
             return Ok(pagedResult);
         }
@@ -100,21 +100,21 @@ public class EncounterController : BaseApiController
     }
 
     [HttpPost]
-    public async Task<ActionResult<EncounterDto>> Create([FromBody] EncounterDto encounter)
+    public async Task<ActionResult<EncounterDtoDB>> Create([FromBody] EncounterDtoDB encounter)
     {
         string json = JsonConvert.SerializeObject(encounter);
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounters/create", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/create", content);
 
             if (response.IsSuccessStatusCode)
             {
  
                 string responseContent = await response.Content.ReadAsStringAsync();
 
-                EncounterDto createdEncounter = JsonConvert.DeserializeObject<EncounterDto>(responseContent);
+                EncounterDtoDB createdEncounter = JsonConvert.DeserializeObject<EncounterDtoDB>(responseContent);
 
                 return Ok(createdEncounter);
             }
@@ -130,9 +130,9 @@ public class EncounterController : BaseApiController
     }
 
     [HttpPost("hiddenLocation")]
-    public async Task<ActionResult<WholeHiddenLocationEncounterDto>> Create([FromBody] WholeHiddenLocationEncounterDto wholeEncounter)
+    public async Task<ActionResult<WholeHiddenLocationEncounterDtoDB>> Create([FromBody] WholeHiddenLocationEncounterDtoDB wholeEncounter)
     {
-        var encounterDto = new EncounterDto
+        var encounterDto = new EncounterDtoDB
         {
             Name = wholeEncounter.Name,
             Description = wholeEncounter.Description,
@@ -143,48 +143,48 @@ public class EncounterController : BaseApiController
             Latitude = wholeEncounter.Latitude,
             ShouldBeApproved = wholeEncounter.ShouldBeApproved
         };
-        var baseEncounterResponse = await _httpClient.PostAsJsonAsync("http://host.docker.internal:4000/encounters/create", encounterDto);
+        var baseEncounterResponse = await _httpClient.PostAsJsonAsync("http://localhost:4000/encounters/create", encounterDto);
 
         if (!baseEncounterResponse.IsSuccessStatusCode)
         {
             return StatusCode((int)HttpStatusCode.BadRequest, "Error occurred while creating encounter.");
         }
 
-        var createdEncounter = await baseEncounterResponse.Content.ReadFromJsonAsync<EncounterDto>();
+        var createdEncounter = await baseEncounterResponse.Content.ReadFromJsonAsync<EncounterDtoDB>();
 
-        var hiddenLocationEncounterDto = new HiddenLocationEncounterDto
+        var hiddenLocationEncounterDto = new HiddenLocationEncounterDtoDB
         {
-            EncounterId = createdEncounter.Id,
+            EncounterId = createdEncounter.Id.ToString(),
             ImageLatitude = wholeEncounter.ImageLatitude,
             ImageLongitude = wholeEncounter.ImageLongitude,
             ImageURL = wholeEncounter.ImageURL,
             DistanceTreshold = wholeEncounter.DistanceTreshold
         };
 
-        var hiddenLocationEncounterResponse = await _httpClient.PostAsJsonAsync("http://host.docker.internal:4000/encounters/createHiddenLocationEncounter", hiddenLocationEncounterDto);
+        var hiddenLocationEncounterResponse = await _httpClient.PostAsJsonAsync("http://localhost:4000/encounters/createHiddenLocationEncounter", hiddenLocationEncounterDto);
 
         if (!hiddenLocationEncounterResponse.IsSuccessStatusCode)
         {
             return StatusCode((int)HttpStatusCode.BadRequest, "Error occurred while creating hidden location encounter.");
         }
 
-        var createdHiddenLocationEncounter = await hiddenLocationEncounterResponse.Content.ReadFromJsonAsync<WholeHiddenLocationEncounterDto>();
+        var createdHiddenLocationEncounter = await hiddenLocationEncounterResponse.Content.ReadFromJsonAsync<WholeHiddenLocationEncounterDtoDB>();
 
         return StatusCode((int)HttpStatusCode.Created, createdHiddenLocationEncounter);
     }
 
-    private async Task<ActionResult<EncounterDto>> CreateBaseEncounterAsync(EncounterDto encounterDto)
+    private async Task<ActionResult<EncounterDtoDB>> CreateBaseEncounterAsync(EncounterDtoDB encounterDto)
     {
         string json = JsonConvert.SerializeObject(encounterDto);
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounters/create", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/create", content);
 
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
-                EncounterDto createdEncounter = JsonConvert.DeserializeObject<EncounterDto>(responseContent);
+                EncounterDtoDB createdEncounter = JsonConvert.DeserializeObject<EncounterDtoDB>(responseContent);
                 return Ok(createdEncounter);
             }
             else
@@ -202,7 +202,7 @@ public class EncounterController : BaseApiController
     [HttpPost("social")]
     public async Task<ActionResult<WholeSocialEncounterDto>> CreateSocialEncounter([FromBody] WholeSocialEncounterDto socialEncounter)
     {
-        EncounterDto encounterDto = new EncounterDto
+        EncounterDtoDB encounterDto = new EncounterDtoDB
         {
             Name = socialEncounter.Name,
             Description = socialEncounter.Description,
@@ -218,9 +218,9 @@ public class EncounterController : BaseApiController
         var baseEncounterResponse = await CreateBaseEncounterAsync(encounterDto);
 
         var baseEncounter = (OkObjectResult)baseEncounterResponse.Result;
-        var createdEncounter = (EncounterDto)baseEncounter.Value;
+        var createdEncounter = (EncounterDtoDB)baseEncounter.Value;
 
-        SocialEncounterDto socialEncounterDto = new SocialEncounterDto
+        SocialEncounterDtoDB socialEncounterDto = new SocialEncounterDtoDB
         {
             EncounterId = createdEncounter.Id,
             TouristsRequiredForCompletion = socialEncounter.TouristsRequiredForCompletion,
@@ -231,7 +231,7 @@ public class EncounterController : BaseApiController
       
         var result = await CreateSocialEncounterAsync(socialEncounterDto);
 
-        var wholeSocialEncounterDto = new WholeSocialEncounterDto
+        var wholeSocialEncounterDto = new WholeSocialEncounterDtoDB
         {
             EncounterId = createdEncounter.Id,
             Name = socialEncounter.Name,
@@ -250,18 +250,18 @@ public class EncounterController : BaseApiController
         return StatusCode((int)HttpStatusCode.Created, wholeSocialEncounterDto);
     }
 
-    private async Task<ActionResult<SocialEncounterDto>> CreateSocialEncounterAsync(SocialEncounterDto socialEncounterDto)
+    private async Task<ActionResult<SocialEncounterDtoDB>> CreateSocialEncounterAsync(SocialEncounterDtoDB socialEncounterDto)
     {
         string json = JsonConvert.SerializeObject(socialEncounterDto);
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounters/createSocialEncounter", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/createSocialEncounter", content);
 
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
-                SocialEncounterDto createdSocialEncounter = JsonConvert.DeserializeObject<SocialEncounterDto>(responseContent);
+                SocialEncounterDtoDB createdSocialEncounter = JsonConvert.DeserializeObject<SocialEncounterDtoDB>(responseContent);
                 return Ok(createdSocialEncounter);
             }
             else
@@ -276,20 +276,20 @@ public class EncounterController : BaseApiController
     }
 
     [HttpPut]
-    public async Task<ActionResult<EncounterDto>> Update([FromBody] EncounterDto encounter)
+    public async Task<ActionResult<EncounterDtoDB>> Update([FromBody] EncounterDtoDB encounter)
     {
         string json = JsonConvert.SerializeObject(encounter);
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
 
         try
         {
-            HttpResponseMessage response = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/update", content);
+            HttpResponseMessage response = await _httpClient.PutAsync("http://localhost:4000/encounters/update", content);
 
             if (response.IsSuccessStatusCode)
             {
                 string responseContent = await response.Content.ReadAsStringAsync();
 
-                EncounterDto updatedEncounter = JsonConvert.DeserializeObject<EncounterDto>(responseContent);
+                EncounterDtoDB updatedEncounter = JsonConvert.DeserializeObject<EncounterDtoDB>(responseContent);
 
                 return Ok(updatedEncounter);
             }
@@ -305,9 +305,9 @@ public class EncounterController : BaseApiController
     }
 
     [HttpPut("hiddenLocation")]
-    public async Task<ActionResult<HiddenLocationEncounterDto>> Update([FromBody] WholeHiddenLocationEncounterDto wholeEncounter)
+    public async Task<ActionResult<HiddenLocationEncounterDtoDB>> Update([FromBody] WholeHiddenLocationEncounterDtoDB wholeEncounter)
     {
-        var encounterDto = new EncounterDto
+        var encounterDto = new EncounterDtoDB
         {
             Id = wholeEncounter.EncounterId,
             Name = wholeEncounter.Name,
@@ -325,14 +325,14 @@ public class EncounterController : BaseApiController
             string encounterJson = JsonConvert.SerializeObject(encounterDto);
             HttpContent encounterContent = new StringContent(encounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/update", encounterContent);
+            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/update", encounterContent);
 
             if (!encounterResponse.IsSuccessStatusCode)
             {
                 return StatusCode((int)encounterResponse.StatusCode, "Error occurred while updating encounter.");
             }
 
-            var hiddenLocationEncounterDto = new HiddenLocationEncounterDto
+            var hiddenLocationEncounterDto = new HiddenLocationEncounterDtoDB
             {
                 Id = wholeEncounter.Id,
                 EncounterId = encounterDto.Id,
@@ -345,7 +345,7 @@ public class EncounterController : BaseApiController
             string hiddenLocationEncounterJson = JsonConvert.SerializeObject(hiddenLocationEncounterDto);
             HttpContent hiddenLocationEncounterContent = new StringContent(hiddenLocationEncounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage hiddenLocationEncounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/updateHiddenLocationEncounter", hiddenLocationEncounterContent);
+            HttpResponseMessage hiddenLocationEncounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/updateHiddenLocationEncounter", hiddenLocationEncounterContent);
 
             if (!hiddenLocationEncounterResponse.IsSuccessStatusCode)
             {
@@ -359,57 +359,54 @@ public class EncounterController : BaseApiController
             return StatusCode(500, $"Error occurred while sending request: {ex.Message}");
         }
     }
-
-
     [HttpPut("social")]
-    public async Task<ActionResult<WholeSocialEncounterDto>> UpdateSocialEncounter([FromBody] WholeSocialEncounterDto socialEncounter)
+    public async Task<ActionResult<SocialEncounterDtoDB>> UpdateSocial([FromBody] WholeSocialEncounterDtoDB wholeEncounter)
     {
-        var encounterDto = new EncounterDto
+        var encounterDto = new EncounterDtoDB
         {
-            Id = socialEncounter.EncounterId,
-            Name = socialEncounter.Name,
-            Description = socialEncounter.Description,
-            XpPoints = socialEncounter.XpPoints,
-            Status = socialEncounter.Status,
-            Type = socialEncounter.Type,
-            Longitude = socialEncounter.Longitude,
-            Latitude = socialEncounter.Latitude,
-            ShouldBeApproved = socialEncounter.ShouldBeApproved
+            Id = wholeEncounter.EncounterId,
+            Name = wholeEncounter.Name,
+            Description = wholeEncounter.Description,
+            XpPoints = wholeEncounter.XpPoints,
+            Status = wholeEncounter.Status,
+            Type = wholeEncounter.Type,
+            Longitude = wholeEncounter.Longitude,
+            Latitude = wholeEncounter.Latitude,
+            ShouldBeApproved = wholeEncounter.ShouldBeApproved
         };
 
         try
         {
-            string json = JsonConvert.SerializeObject(encounterDto);
-            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
+            string encounterJson = JsonConvert.SerializeObject(encounterDto);
+            HttpContent encounterContent = new StringContent(encounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/update", content);
+            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/update", encounterContent);
 
             if (!encounterResponse.IsSuccessStatusCode)
             {
                 return StatusCode((int)encounterResponse.StatusCode, "Error occurred while updating encounter.");
             }
 
-            string encounterResponseContent = await encounterResponse.Content.ReadAsStringAsync();
-
-            EncounterDto updatedEncounter = JsonConvert.DeserializeObject<EncounterDto>(encounterResponseContent);
-
-            var socialEncounterDto = new SocialEncounterDto
+            var socialEncounterDto = new SocialEncounterDtoDB
             {
-                Id = socialEncounter.Id,
-                EncounterId = updatedEncounter.Id,
-                TouristsRequiredForCompletion = socialEncounter.TouristsRequiredForCompletion,
-                DistanceTreshold = socialEncounter.DistanceTreshold,
-                TouristIDs = socialEncounter.TouristIDs
+                Id = wholeEncounter.Id,
+                EncounterId = encounterDto.Id,
+                TouristsRequiredForCompletion = wholeEncounter.TouristsRequiredForCompletion,
+                DistanceTreshold = wholeEncounter.DistanceTreshold,
+                TouristIDs = wholeEncounter.TouristIDs
             };
 
-            HttpResponseMessage socialEncounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/updateSocialEncounter", content);
+            string socialEncounterJson = JsonConvert.SerializeObject(socialEncounterDto);
+            HttpContent socialEncounterContent = new StringContent(socialEncounterJson, Encoding.UTF8, "application/json");
+
+            HttpResponseMessage socialEncounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/updateSocialEncounter", socialEncounterContent);
 
             if (!socialEncounterResponse.IsSuccessStatusCode)
             {
                 return StatusCode((int)socialEncounterResponse.StatusCode, "Error occurred while updating social encounter.");
             }
 
-            return StatusCode((int)HttpStatusCode.NoContent, socialEncounterDto);
+            return StatusCode((int)HttpStatusCode.NoContent);
         }
         catch (HttpRequestException ex)
         {
@@ -418,63 +415,56 @@ public class EncounterController : BaseApiController
     }
 
 
-    [HttpDelete("{baseEncounterId:int}")]
-    public async Task<ActionResult> DeleteEncounter(int baseEncounterId)
+
+    /*sig radi
+    [HttpDelete("{baseEncounterId}")]
+    public async Task<ActionResult> DeleteEncounter(string baseEncounterId)
     {
         var baseEncounterResponse = await DeleteEncounterAsync(baseEncounterId);
-
-        if (baseEncounterResponse.IsSuccessStatusCode || baseEncounterResponse.StatusCode == HttpStatusCode.NoContent)
-        {
-            var socialEncounterIdResponse = await GetSocialEncounterIdAsync(baseEncounterId);
-
-            string jsonResponse1 = await socialEncounterIdResponse.Content.ReadAsStringAsync();
-            JObject jsonObject1 = JObject.Parse(jsonResponse1);
-            int socialEncounterId = (int)jsonObject1["socialEncounterId"];
-
-            var hiddenLocationEncounterIdResponse = await GetHiddenLocationEncounterIdAsync(baseEncounterId);
-
-            string jsonResponse2 = await hiddenLocationEncounterIdResponse.Content.ReadAsStringAsync();
-            JObject jsonObject2 = JObject.Parse(jsonResponse2);
-            int hiddenLocationEncounterId = (int)jsonObject2["hiddenLocationEncounterId"];
-
-            if (socialEncounterId != -1)
-            {
-                var socialEncounterResponse = await DeleteSocialEncounterAsync(socialEncounterId);
-                return CreateResponse(socialEncounterResponse);
-            }
-            else if (hiddenLocationEncounterId != -1)
-            {
-                var hiddenLocationEncounterResponse = await DeleteHiddenLocationEncounterAsync(hiddenLocationEncounterId);
-                return CreateResponse(hiddenLocationEncounterResponse);
-            }
-        }
+       
 
         return CreateResponse(baseEncounterResponse);
     }
 
-    private async Task<HttpResponseMessage> DeleteEncounterAsync(int baseEncounterId)
+    private async Task<HttpResponseMessage> DeleteEncounterAsync(string baseEncounterId)
     {
-        return await _httpClient.DeleteAsync($"http://host.docker.internal:4000/encounters/deleteEncounter/{baseEncounterId}");
+        return await _httpClient.DeleteAsync($"http://localhost:4000/encounters/deleteEncounter/{baseEncounterId}");
     }
 
-    private async Task<HttpResponseMessage> GetSocialEncounterIdAsync(int baseEncounterId)
+
+    */
+
+    [HttpDelete("{baseEncounterId}")]
+    public async Task<ActionResult> DeleteEncounter(string baseEncounterId)
     {
-        return await _httpClient.GetAsync($"http://host.docker.internal:4000/encounters/getSocialEncounterId/{baseEncounterId}");
+        var baseEncounterResponse = await DeleteEncounterAsync(baseEncounterId);
+
+
+        return CreateResponse(baseEncounterResponse);
     }
 
-    private async Task<HttpResponseMessage> GetHiddenLocationEncounterIdAsync(int baseEncounterId)
+    private async Task<HttpResponseMessage> DeleteEncounterAsync(string baseEncounterId)
     {
-        return await _httpClient.GetAsync($"http://host.docker.internal:4000/encounters/getHiddenLocationEncounterId/{baseEncounterId}");
+        return await _httpClient.DeleteAsync($"http://localhost:4000/encounters/deleteEncounter/{baseEncounterId}");
+    }
+    private async Task<HttpResponseMessage> GetSocialEncounterIdAsync(string baseEncounterId)
+    {
+        return await _httpClient.GetAsync($"http://localhost:4000/encounters/getSocialEncounterId/{baseEncounterId}");
     }
 
-    private async Task<HttpResponseMessage> DeleteSocialEncounterAsync(long socialEncounterId)
+    private async Task<HttpResponseMessage> GetHiddenLocationEncounterIdAsync(string baseEncounterId)
     {
-        return await _httpClient.DeleteAsync($"http://host.docker.internal:4000/encounters/deleteSocialEncounter/{socialEncounterId}");
+        return await _httpClient.GetAsync($"http://localhost:4000/encounters/getHiddenLocationEncounterId/{baseEncounterId}");
     }
 
-    private async Task<HttpResponseMessage> DeleteHiddenLocationEncounterAsync(long hiddenLocationEncounterId)
+    private async Task<HttpResponseMessage> DeleteSocialEncounterAsync(string socialEncounterId)
     {
-        return await _httpClient.DeleteAsync($"http://host.docker.internal:4000/encounters/deleteHiddenLocationEncounter/{hiddenLocationEncounterId}");
+        return await _httpClient.DeleteAsync($"http://localhost:4000/encounters/deleteSocialEncounter/{socialEncounterId}");
+    }
+
+    private async Task<HttpResponseMessage> DeleteHiddenLocationEncounterAsync(string hiddenLocationEncounterId)
+    {
+        return await _httpClient.DeleteAsync($"http://localhost:4000/encounters/deleteHiddenLocationEncounter/{hiddenLocationEncounterId}");
     }
 
     private ActionResult CreateResponse(HttpResponseMessage response)
@@ -489,5 +479,5 @@ public class EncounterController : BaseApiController
         }
     }
 
-  
+
 }
