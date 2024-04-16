@@ -416,23 +416,7 @@ public class EncounterController : BaseApiController
 
 
 
-    /*sig radi
-    [HttpDelete("{baseEncounterId}")]
-    public async Task<ActionResult> DeleteEncounter(string baseEncounterId)
-    {
-        var baseEncounterResponse = await DeleteEncounterAsync(baseEncounterId);
-       
-
-        return CreateResponse(baseEncounterResponse);
-    }
-
-    private async Task<HttpResponseMessage> DeleteEncounterAsync(string baseEncounterId)
-    {
-        return await _httpClient.DeleteAsync($"http://localhost:4000/encounters/deleteEncounter/{baseEncounterId}");
-    }
-
-
-    */
+  
 
     [HttpDelete("{baseEncounterId}")]
     public async Task<ActionResult> DeleteEncounter(string baseEncounterId)
