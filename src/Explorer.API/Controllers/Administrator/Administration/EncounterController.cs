@@ -41,7 +41,7 @@ public class EncounterController : BaseApiController
     public async Task<ActionResult<PagedResult<EncounterDtoDB>>> GetAllEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
         
-        var response = await _httpClient.GetAsync($"http://localhost:4000/encounters?page={page}&pageSize={pageSize}");
+        var response = await _httpClient.GetAsync($"http://host.docker.internal:4000/encounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
@@ -60,7 +60,7 @@ public class EncounterController : BaseApiController
     [HttpGet("social")]
     public async Task<ActionResult<PagedResult<SocialEncounterDtoDB>>> GetAllSocialEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
-        var response = await _httpClient.GetAsync($"http://localhost:4000/socialEncounters?page={page}&pageSize={pageSize}");
+        var response = await _httpClient.GetAsync($"http://host.docker.internal:4000/socialEncounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
@@ -81,7 +81,7 @@ public class EncounterController : BaseApiController
     [HttpGet("hiddenLocation")]
     public async Task<ActionResult<PagedResult<HiddenLocationEncounterDtoDB>>> GetAllHiddenLocationEncounters([FromQuery] int page, [FromQuery] int pageSize)
     {
-        var response = await _httpClient.GetAsync($"http://localhost:4000/hiddenLocationEncounters?page={page}&pageSize={pageSize}");
+        var response = await _httpClient.GetAsync($"http://host.docker.internal:4000/hiddenLocationEncounters?page={page}&pageSize={pageSize}");
 
         if (response.IsSuccessStatusCode)
         {
@@ -107,7 +107,7 @@ public class EncounterController : BaseApiController
 
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/create", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounters/create", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -143,7 +143,7 @@ public class EncounterController : BaseApiController
             Latitude = wholeEncounter.Latitude,
             ShouldBeApproved = wholeEncounter.ShouldBeApproved
         };
-        var baseEncounterResponse = await _httpClient.PostAsJsonAsync("http://localhost:4000/encounters/create", encounterDto);
+        var baseEncounterResponse = await _httpClient.PostAsJsonAsync("http://host.docker.internal:4000/encounters/create", encounterDto);
 
         if (!baseEncounterResponse.IsSuccessStatusCode)
         {
@@ -161,7 +161,7 @@ public class EncounterController : BaseApiController
             DistanceTreshold = wholeEncounter.DistanceTreshold
         };
 
-        var hiddenLocationEncounterResponse = await _httpClient.PostAsJsonAsync("http://localhost:4000/encounters/createHiddenLocationEncounter", hiddenLocationEncounterDto);
+        var hiddenLocationEncounterResponse = await _httpClient.PostAsJsonAsync("http://host.docker.internal:4000/encounters/createHiddenLocationEncounter", hiddenLocationEncounterDto);
 
         if (!hiddenLocationEncounterResponse.IsSuccessStatusCode)
         {
@@ -179,7 +179,7 @@ public class EncounterController : BaseApiController
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/create", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounters/create", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -256,7 +256,7 @@ public class EncounterController : BaseApiController
         HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
         try
         {
-            HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:4000/encounters/createSocialEncounter", content);
+            HttpResponseMessage response = await _httpClient.PostAsync("http://host.docker.internal:4000/encounters/createSocialEncounter", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -283,7 +283,7 @@ public class EncounterController : BaseApiController
 
         try
         {
-            HttpResponseMessage response = await _httpClient.PutAsync("http://localhost:4000/encounters/update", content);
+            HttpResponseMessage response = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/update", content);
 
             if (response.IsSuccessStatusCode)
             {
@@ -325,7 +325,7 @@ public class EncounterController : BaseApiController
             string encounterJson = JsonConvert.SerializeObject(encounterDto);
             HttpContent encounterContent = new StringContent(encounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/update", encounterContent);
+            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/update", encounterContent);
 
             if (!encounterResponse.IsSuccessStatusCode)
             {
@@ -345,7 +345,7 @@ public class EncounterController : BaseApiController
             string hiddenLocationEncounterJson = JsonConvert.SerializeObject(hiddenLocationEncounterDto);
             HttpContent hiddenLocationEncounterContent = new StringContent(hiddenLocationEncounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage hiddenLocationEncounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/updateHiddenLocationEncounter", hiddenLocationEncounterContent);
+            HttpResponseMessage hiddenLocationEncounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/updateHiddenLocationEncounter", hiddenLocationEncounterContent);
 
             if (!hiddenLocationEncounterResponse.IsSuccessStatusCode)
             {
@@ -380,7 +380,7 @@ public class EncounterController : BaseApiController
             string encounterJson = JsonConvert.SerializeObject(encounterDto);
             HttpContent encounterContent = new StringContent(encounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/update", encounterContent);
+            HttpResponseMessage encounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/update", encounterContent);
 
             if (!encounterResponse.IsSuccessStatusCode)
             {
@@ -399,7 +399,7 @@ public class EncounterController : BaseApiController
             string socialEncounterJson = JsonConvert.SerializeObject(socialEncounterDto);
             HttpContent socialEncounterContent = new StringContent(socialEncounterJson, Encoding.UTF8, "application/json");
 
-            HttpResponseMessage socialEncounterResponse = await _httpClient.PutAsync("http://localhost:4000/encounters/updateSocialEncounter", socialEncounterContent);
+            HttpResponseMessage socialEncounterResponse = await _httpClient.PutAsync("http://host.docker.internal:4000/encounters/updateSocialEncounter", socialEncounterContent);
 
             if (!socialEncounterResponse.IsSuccessStatusCode)
             {
@@ -429,7 +429,7 @@ public class EncounterController : BaseApiController
 
     private async Task<HttpResponseMessage> DeleteEncounterAsync(string baseEncounterId)
     {
-        return await _httpClient.DeleteAsync($"http://localhost:4000/encounters/deleteEncounter/{baseEncounterId}");
+        return await _httpClient.DeleteAsync($"http://host.docker.internal:4000/encounters/deleteEncounter/{baseEncounterId}");
     }
     private async Task<HttpResponseMessage> GetSocialEncounterIdAsync(string baseEncounterId)
     {
